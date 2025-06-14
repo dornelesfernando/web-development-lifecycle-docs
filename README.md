@@ -37,24 +37,49 @@ Este é o documento que detalha o ciclo de vida completo do desenvolvimento de u
     │   │   │   ├── migrations.ts
     │   │   │   └── seeders.ts    # Para popular o DB (opcional)
     |   │   ├── models/
-    |   |   │   ├── User.ts
-    |   |   │   ├── Product.ts
-    |   |   │   └── index.ts    # Exporta todos os modelos
+    |   |   │   ├── Employee.ts
+    |   |   │   ├── Position.ts
+    |   |   │   ├── Department.ts
+    |   |   │   ├── Project.ts
+    |   |   │   ├── Task.ts
+    |   |   │   ├── EmployeeTask.ts
+    |   |   │   ├── HourLog.ts
+    |   |   │   ├── Attachment.ts
+    |   |   │   ├── Role.ts
+    |   |   │   ├── Permission.ts
+    |   |   │   ├── RolePermission.ts
+    |   |   │   ├── EmployeeRole.ts
+    |   |   │   └── index.ts    # Exporta todos os modelos e associações
     │   │   ├── routes/
     │   |   │   ├── authRoutes.ts
-    │   |   │   ├── userRoutes.ts    # Rotas para gerenciamento de usuários (admins)
-    │   |   │   ├── productRoutes.ts
+    │   |   │   ├── employeeRoutes.ts    # Rotas para gerenciamento de usuários (admins)
+    │   |   │   ├── positionRoutes.ts
+    │   |   │   ├── departmentRoutes.ts
+    │   |   │   ├── projectRoutes.ts
+    │   |   │   ├── taskRoutes.ts
+    │   |   │   ├── hourLogRoutes.ts
+    │   |   │   ├── attachmentRoutes.ts
+    │   |   │   ├── roleRoutes.ts
+    │   |   │   ├── permissionRoutes.ts
     │   |   │   └── uploadRoutes.ts
     │   │   ├── middleware/
     │   |   │   ├── authMiddleware.ts
+    │   |   │   ├── permissionMiddleware.ts    # middleware para permissões granulares    
     │   |   │   └── errorMiddleware.ts
     │   │   ├── controllers/
-    │   |   │   ├── authController.ts
-    │   |   │   ├── userController.ts
-    │   |   │   ├── productController.ts
-    │   |   │   └── uploadController.ts
+    │   │   │   ├── authController.ts
+    │   |   │   ├── employeeController.ts
+    │   |   │   ├── positionController.ts
+    │   |   │   ├── departmentController.ts
+    │   |   │   ├── projectController.ts
+    │   |   │   ├── taskController.ts
+    │   |   │   ├── hourLogController.ts
+    │   |   │   ├── attachmentController.ts
+    │   |   │   ├── roleController.ts
+    │   |   │   └── permissionController.ts
     │   │   ├── utils/
-    │   |   │   └── fileUpload.ts    # Configuração do Multer
+    │   │   │   ├── fileUpload.ts    # Configuração do Multer
+    │   |   │   └── generateToken.ts    # Função auxiliar
     │   │   ├── types/
     │   |   │   └── express.d.ts    # Para estender tipos do Express
     │   │   └── server.ts
