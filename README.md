@@ -27,16 +27,17 @@ Este é o documento que detalha o ciclo de vida completo do desenvolvimento de u
     │   ├── package.json
     │   └── tsconfig.json
     ├── Backend/
-    │   ├── node_modules/
+    │   ├── node_modules/    # Dependências do projeto (gerenciado pelo npm/yarn)
     │   ├── dist/     # Pasta de saída dos arquivos compilados (criada após 'npm run build')
-    │   ├── src/
-    │   │   ├── config/
+    │   ├── src/    # Código fonte da aplicação
+    │   │   ├── config/     # Arquivos de configuração da aplicação
+    │   │	│   ├── index.ts # Configurações do Sequelize   # Arquivo principal de exportação de configurações (ex: JWT secrets)
     │   │	│   └── database.ts # Configurações do Sequelize
-    │   │	├── database/
+    │   │	├── database/    # Lógica de banco de dados e modelos
     │   │   │   ├── index.ts    # Inicialização do Sequelize
-    │   │   │   ├── migrations.ts
+    │   │   │   ├── migrations.ts    # Scripts de migração do banco de dados
     │   │   │   └── seeders.ts    # Para popular o DB (opcional)
-    |   │   ├── models/
+    |   │   ├── models/    # Definições dos modelos Sequelize
     |   |   │   ├── Employee.ts
     |   |   │   ├── Position.ts
     |   |   │   ├── Department.ts
@@ -50,9 +51,9 @@ Este é o documento que detalha o ciclo de vida completo do desenvolvimento de u
     |   |   │   ├── RolePermission.ts
     |   |   │   ├── EmployeeRole.ts
     |   |   │   └── index.ts    # Exporta todos os modelos e associações
-    │   │   ├── routes/
+    |   │   ├── routes/    # Definição das rotas e mapeamento para controllers
     │   |   │   ├── authRoutes.ts
-    │   |   │   ├── employeeRoutes.ts    # Rotas para gerenciamento de usuários (admins)
+    │   |   │   ├── employeeRoutes.ts
     │   |   │   ├── positionRoutes.ts
     │   |   │   ├── departmentRoutes.ts
     │   |   │   ├── projectRoutes.ts
@@ -61,12 +62,13 @@ Este é o documento que detalha o ciclo de vida completo do desenvolvimento de u
     │   |   │   ├── attachmentRoutes.ts
     │   |   │   ├── roleRoutes.ts
     │   |   │   ├── permissionRoutes.ts
-    │   |   │   └── uploadRoutes.ts
-    │   │   ├── middleware/
+    │   |   │   ├── uploadRoutes.ts
+    │   |   │   └── index.ts    # Agrega e exporta todas as rotas para o 'app.ts'
+    │   │   ├── middleware/    # Funções middleware para processamento de requisições
     │   |   │   ├── authMiddleware.ts
     │   |   │   ├── permissionMiddleware.ts    # middleware para permissões granulares    
-    │   |   │   └── errorMiddleware.ts
-    │   │   ├── controllers/
+    │   |   │   └── errorMiddleware.ts    # Middleware para tratamento centralizado de erros
+    │   │   ├── controllers/    # Lógica de roteamento e tratamento de requisições HTTP (camada de entrada)
     │   │   │   ├── authController.ts
     │   |   │   ├── employeeController.ts
     │   |   │   ├── positionController.ts
@@ -77,17 +79,30 @@ Este é o documento que detalha o ciclo de vida completo do desenvolvimento de u
     │   |   │   ├── attachmentController.ts
     │   |   │   ├── roleController.ts
     │   |   │   └── permissionController.ts
-    │   │   ├── utils/
+    │   │   ├── services/    # Lógica de negócio e orquestração (chamada pelos controllers)
+    │   │   │   ├── authService.ts
+    │   |   │   ├── employeeService.ts
+    │   │   │   ├── projectService.ts
+    │   |   │   ├── taskService.ts
+    │   |   │   └── index.ts    # Opcional: exporta todos os serviços
+    │   │   ├── utils/    # Funções utilitárias e auxiliares (genéricas)
     │   │   │   ├── fileUpload.ts    # Configuração do Multer
-    │   |   │   └── generateToken.ts    # Função auxiliar
-    │   │   ├── types/
-    │   |   │   └── express.d.ts    # Para estender tipos do Express
-    │   │   └── server.ts
-    │   ├── tests/
-    │   |   └── # ADICIONAR #
-    │   ├── .env
-    │   ├── package.json
-    │   └── tsconfig.json
+    │   |   │   ├── generateToken.ts    # Função auxiliar
+    │   |   │   └── helpers.ts    # Funções diversas de ajuda
+    │   │   ├── types/   # Definições de tipos e interfaces globais
+    │   |   │   ├── express.d.ts    # Para estender tipos do Express
+    │   |   │   └── common.d.ts    # Tipos comuns usados em vários lugares
+    │   │   ├── Validations/   # Schemas de validação de dados (ex: Joi, Zod)
+    │   |   │   ├── authValidation.ts
+    │   |   │   └── projectValidation.ts
+    │   |   └── app.ts    # Ponto de entrada da aplicação (configurações do Express, rotas, middlewares)
+    │   ├── tests/    # Testes unitários e de integração
+    │   |   ├── unit/    # Testes unitários para funções específicas (e.g., utils, services)
+    │   |   ├── integration/    # Testes de integração (e.g., rotas, controllers)
+    │   |   └── fixtures/    # Dados de teste (opcional)
+    │   ├── .env    # Variáveis de ambiente
+    │   ├── package.json    # Definições do projeto e scripts
+    │   └── tsconfig.json    # Configurações do TypeScript
     ├── .gitignore
     ├── README.md
     └── docker-compose.yml # Gerenciar os serviços do docker (PosgreSQL, Back-end)

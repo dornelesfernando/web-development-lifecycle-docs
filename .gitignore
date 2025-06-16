@@ -20,3 +20,6 @@ Thumbs.db
 # Arquivos de cache do editor/outros
 *.bak
 *.tmp
+
+# Arquivos de auxílio
+backend/src/config/index.ts
