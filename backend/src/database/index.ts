@@ -18,7 +18,6 @@ import { EmployeeRole } from '../models/EmployeeRole';
 const sequelize = new Sequelize(dbConfig);
 
 // Inicializar TODOS os modelos
-
 Employee.initialize(sequelize);
 Position.initialize(sequelize);
 Department.initialize(sequelize);
