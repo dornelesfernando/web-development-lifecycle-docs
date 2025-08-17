@@ -1,9 +1,10 @@
 import { DataTypes, Model, Optional, Sequelize } from "sequelize";
-import { Project } from "./Project";
-import { Employee } from "./Employee";
-import { EmployeeTask } from "./EmployeeTask";
-import { HourLog } from "./HourLog";
-import { Attachment } from "./Attachment";
+
+import type { Project } from "./Project";
+import type { Employee } from "./Employee";
+import type { EmployeeTask } from "./EmployeeTask";
+import type { HourLog } from "./HourLog";
+import type { Attachment } from "./Attachment";
 
 interface TaskAttributes {
     id: string; // UUID
@@ -14,11 +15,9 @@ interface TaskAttributes {
     status: 'pending' | 'in_progress' | 'in_review' | 'completed' | 'on_hold' | 'cancelled' | 'archived' | 'deleted' | 'reopened' | 'waiting_for_review' | 'waiting_for_approval' | 'waiting_for_feedback' | 'waiting_for_resources' | 'waiting_for_dependencies';
     project_id?: string; // UUID of the project to which the task belongs
     creator_id: string; // UUID of the employee who created the task
-    created_at?: Date;
-    updated_at?: Date;
 }
 
-interface TaskCreationAttributes extends Optional<TaskAttributes, 'id' | 'description' | 'due_date' | 'priority' | 'status' | 'project_id' | 'created_at' | 'updated_at'> {}
+interface TaskCreationAttributes extends Optional<TaskAttributes, 'id' | 'description' | 'due_date' | 'priority' | 'status' | 'project_id'> {}
 
 class Task extends Model<TaskAttributes, TaskCreationAttributes> implements TaskAttributes {
     public id!: string;
@@ -29,8 +28,16 @@ class Task extends Model<TaskAttributes, TaskCreationAttributes> implements Task
     public status!: 'pending' | 'in_progress' | 'in_review' | 'completed' | 'on_hold' | 'cancelled' | 'archived' | 'deleted' | 'reopened' | 'waiting_for_review' | 'waiting_for_approval' | 'waiting_for_feedback' | 'waiting_for_resources' | 'waiting_for_dependencies';
     public project_id?: string; // UUID of the project to which the task belongs
     public creator_id!: string; // UUID of the employee who created the task
+    
     public readonly created_at!: Date;
     public readonly updated_at!: Date;
+
+    public readonly project?: Project;
+    public readonly creator?: Employee;
+    public readonly attachments?: Attachment[];
+    public readonly assignedEmployees?: Employee[];
+    public readonly hourLogs?: HourLog[];
+    public readonly employeeTasks?: EmployeeTask[];
 
     // Métodos de inicialização e associação
     static initialize(sequelize: Sequelize) {
@@ -78,16 +85,6 @@ class Task extends Model<TaskAttributes, TaskCreationAttributes> implements Task
                     model: 'employees',
                     key: 'id'
                 }
-            },
-            created_at: {
-                type: DataTypes.DATE,
-                allowNull: false,
-                defaultValue: DataTypes.NOW
-            },
-            updated_at: {
-                type: DataTypes.DATE,
-                allowNull: false,
-                defaultValue: DataTypes.NOW
             }
         }, {
             sequelize,
@@ -115,14 +112,21 @@ class Task extends Model<TaskAttributes, TaskCreationAttributes> implements Task
             as: 'attachments'
         });
 
-        Task.hasMany(models.EmployeeTask, {
-            foreignKey: 'task_id',
-            as: 'assignedEmployees'
-        });
-
         Task.hasMany(models.HourLog, {
             foreignKey: 'task_id',
             as: 'hourLogs'
+        });
+
+        Task.hasMany(models.EmployeeTask, {
+            foreignKey: 'task_id',
+            as: 'employeeTasks'
+        });
+
+        Task.belongsToMany(models.Employee, {
+            through: models.EmployeeTask,
+            foreignKey: 'task_id',
+            otherKey: 'employee_id',
+            as: 'assignedEmployees'
         });
     }
 }

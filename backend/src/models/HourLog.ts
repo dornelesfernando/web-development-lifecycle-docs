@@ -1,7 +1,6 @@
 import { DataTypes, Model, Optional, Sequelize } from 'sequelize';
-import { Task } from './Task';
-import { Employee } from './Employee';
-
+import type { Task } from './Task';
+import type { Employee } from './Employee';
 
 interface HourLogAttributes {
     id: string; // UUID
@@ -13,11 +12,9 @@ interface HourLogAttributes {
     approval_status: 'pending' | 'approved' | 'rejected';
     approver_id?: string; // UUID of the employee, may be null
     approval_date?: Date;
-    created_at?: Date;
-    updated_at?: Date;
 }
 
-interface HourLogCreationAttributes extends Optional<HourLogAttributes, 'id' | 'description' | 'approval_status' | 'approver_id' | 'approval_date' | 'created_at' | 'updated_at'> {}
+interface HourLogCreationAttributes extends Optional<HourLogAttributes, 'id' | 'description' | 'approval_status' | 'approver_id' | 'approval_date'> {}
 
 class HourLog extends Model<HourLogAttributes, HourLogCreationAttributes> implements HourLogAttributes {
     public id!: string;
@@ -29,8 +26,13 @@ class HourLog extends Model<HourLogAttributes, HourLogCreationAttributes> implem
     public approval_status!: 'pending' | 'approved' | 'rejected';
     public approver_id?: string;
     public approval_date?: Date;
+
     public readonly created_at!: Date;
     public readonly updated_at!: Date;
+
+    public readonly task?: Task;
+    public readonly employee?: Employee;
+    public readonly approver?: Employee;
 
     // Métodos de inicialização e associação
     static initialize(sequelize: Sequelize) {
@@ -85,16 +87,6 @@ class HourLog extends Model<HourLogAttributes, HourLogCreationAttributes> implem
             approval_date: {
                 type: DataTypes.DATE,
                 allowNull: true
-            },
-            created_at: {
-                type: DataTypes.DATE,
-                defaultValue: DataTypes.NOW,
-                allowNull: false
-            },
-            updated_at: {
-                type: DataTypes.DATE,
-                defaultValue: DataTypes.NOW,
-                allowNull: false
             }
         }, {
             sequelize,
@@ -107,17 +99,17 @@ class HourLog extends Model<HourLogAttributes, HourLogCreationAttributes> implem
 
     // Métodos de associação
     static associate(models: any) {
-        HourLog.hasMany(models.Employee, {
+        HourLog.belongsTo(models.Employee, {
             foreignKey: 'task_id',
             as: 'task'
         })
 
-        HourLog.hasMany(models.Employee, {
+        HourLog.belongsTo(models.Employee, {
             foreignKey: 'employee_id',
             as: 'employee'
         })
 
-        HourLog.hasMany(models.Task, {
+        HourLog.belongsTo(models.Task, {
             foreignKey: 'approver_id',
             as: 'approver'
         })

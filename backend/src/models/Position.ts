@@ -1,5 +1,7 @@
 import { DataTypes, Model, Optional, Sequelize } from "sequelize";
 
+import type { Employee } from "./Employee";
+
 interface PositionAttributes {
     id: string; // UUID
     name: string;
@@ -14,6 +16,8 @@ class Position extends Model<PositionAttributes, PositionCreationAttributes> imp
     public name!: string;
     public description?: string;
     public hierarchical_level!: number;
+
+    public readonly employees?: Employee[];
 
     // Métodos de inicialização e associação
     static initialize(sequelize: Sequelize) {

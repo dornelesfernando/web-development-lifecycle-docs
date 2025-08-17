@@ -1,5 +1,6 @@
 import { DataTypes, Model, Optional, Sequelize } from "sequelize";
-import { RolePermission } from "./RolePermission";
+import type { RolePermission } from "./RolePermission";
+import type { Role } from "./Role";
 
 interface PermissionAttributes {
     id: string; // UUID
@@ -13,6 +14,9 @@ class Permission extends Model<PermissionAttributes, PermissionCreationAttribute
     public id!: string;
     public name!: string;
     public description?: string;
+
+    public readonly rolePermissions?: RolePermission[];
+    public readonly roles?: Role[];
 
     // Métodos de inicialização e associação
     static initialize(sequelize: Sequelize) {
@@ -34,7 +38,7 @@ class Permission extends Model<PermissionAttributes, PermissionCreationAttribute
             }
         }, {
             sequelize,
-            modelName: 'permissions',
+            tableName: 'permissions',
             timestamps: false
         });
     }
@@ -45,6 +49,13 @@ class Permission extends Model<PermissionAttributes, PermissionCreationAttribute
             foreignKey: 'permission_id',
             as: 'rolePermissions'
         })
+
+        Permission.belongsToMany(models.Role, {
+            through: models.RolePermission,
+            foreignKey: 'permission_id',
+            otherKey: 'role_id',
+            as: 'roles'
+        });
     }
 }
 

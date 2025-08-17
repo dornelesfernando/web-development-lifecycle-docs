@@ -1,7 +1,7 @@
 import { DataTypes, Model, Optional, Sequelize } from "sequelize";
-import { Employee } from "./Employee";
-import { Task } from "./Task";
-import { Project } from "./Project";
+import type { Employee } from "./Employee";
+import type { Task } from "./Task";
+import type { Project } from "./Project";
 
 interface AttachmentAttributes {
     id: string; // UUID
@@ -13,11 +13,9 @@ interface AttachmentAttributes {
     task_id?: string; // UUID of the task
     project_id?: string; // UUID of the project
     employee_profile_id?: string; // UUID of the employee (profile attachment)
-    created_at?: Date;
-    updated_at?: Date;
 }
 
-interface AttachmentCreationAttributes extends Optional<AttachmentAttributes, 'id' | 'task_id' | 'project_id' | 'employee_profile_id' | 'created_at' | 'updated_at'> {}
+interface AttachmentCreationAttributes extends Optional<AttachmentAttributes, 'id' | 'task_id' | 'project_id' | 'employee_profile_id'> {}
 
 class Attachment extends Model<AttachmentAttributes, AttachmentCreationAttributes> implements AttachmentAttributes {
     public id!: string;
@@ -29,8 +27,14 @@ class Attachment extends Model<AttachmentAttributes, AttachmentCreationAttribute
     public task_id?: string;
     public project_id?: string;
     public employee_profile_id?: string;
+
     public readonly created_at!: Date;
     public readonly updated_at!: Date;
+
+    public readonly creator?: Employee;
+    public readonly task?: Task;
+    public readonly project?: Project;
+    public readonly employeeProfile?: Employee;
 
     // Métodos de inicialização e associação
     static initialize(sequelize: Sequelize) {
@@ -89,16 +93,6 @@ class Attachment extends Model<AttachmentAttributes, AttachmentCreationAttribute
                     model: 'employees',
                     key: 'id'
                 }
-            },
-            created_at: {
-                type: DataTypes.DATE,
-                allowNull: false,
-                defaultValue: DataTypes.NOW
-            },
-            updated_at: {
-                type: DataTypes.DATE,
-                allowNull: false,
-                defaultValue: DataTypes.NOW
             }
         }, {
                 sequelize,
@@ -111,22 +105,22 @@ class Attachment extends Model<AttachmentAttributes, AttachmentCreationAttribute
 
     // Métodos de associação
     static associate(models: any) {
-        Attachment.hasMany(models.Employee, {
+        Attachment.belongsTo(models.Employee, {
             foreignKey: 'creator_id',
             as: 'creator'
         })
 
-        Attachment.hasMany(models.Taks, {
+        Attachment.belongsTo(models.Task, {
             foreignKey: 'task_id',
             as: 'task'
         })
 
-        Attachment.hasMany(models.Project, {
+        Attachment.belongsTo(models.Project, {
             foreignKey: 'project_id',
             as: 'project'
         })
 
-        Attachment.hasMany(models.Employee, {
+        Attachment.belongsTo(models.Employee, {
             foreignKey: 'employee_profile_id',
             as: 'employeeProfile'
         })

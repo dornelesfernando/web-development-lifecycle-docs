@@ -1,5 +1,5 @@
 import { DataTypes, Model, Optional, Sequelize } from "sequelize";
-import { Employee } from "./Employee";
+import type { Employee } from "./Employee"; 
 
 interface DepartmentAttributes {
     id: string; // UUID
@@ -14,7 +14,10 @@ class Department extends Model<DepartmentAttributes, DepartmentCreationAttribute
     public id!: string; // UUID
     public name!: string;
     public description?: string;
-    public manaher_id?: string; // FK UUID of the manager
+    public manager_id?: string; // FK UUID of the manager
+
+    public readonly employees?: Employee[];
+    public readonly manager?: Employee;
 
     // Métodos de inicialização e associação
     static initialize(sequelize: Sequelize) {

@@ -1,6 +1,6 @@
 import { DataTypes, Model, Optional, Sequelize } from "sequelize";
-import { Employee } from "./Employee";
-import { Role } from "./Role";
+import type { Employee } from "./Employee";
+import type { Role } from "./Role";
 
 interface EmployeeRoleAttributes {
     id: string; // UUID
@@ -14,6 +14,9 @@ class EmployeeRole extends Model<EmployeeRoleAttributes, EmployeeRoleCreationAtt
     public id!: string;
     public employee_id!: string;
     public role_id!: string;
+
+    public readonly employee?: Employee;
+    public readonly role?: Role;
 
     // Métodos de inicialização e associação
     static initialize(sequelize: Sequelize) {
@@ -53,12 +56,12 @@ class EmployeeRole extends Model<EmployeeRoleAttributes, EmployeeRoleCreationAtt
 
     // Métodos de associação
     static associate(models: any) {
-        EmployeeRole.hasMany(models.Employee, {
+        EmployeeRole.belongsTo(models.Employee, {
             foreignKey: 'employee_id',
             as: 'employee'
         })
 
-        EmployeeRole.hasMany(models.Role, {
+        EmployeeRole.belongsTo(models.Role, {
             foreignKey: 'role_id',
             as: 'role'
         })

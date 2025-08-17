@@ -1,4 +1,7 @@
 import { DataTypes, Model, Optional, Sequelize } from "sequelize";
+import type { Employee } from "./Employee";
+import type { Task } from "./Task";
+import type { Attachment } from "./Attachment";
 
 interface ProjectAttributes {
     id: string; // UUID
@@ -8,11 +11,9 @@ interface ProjectAttributes {
     expected_end_date?: Date;
     status: 'active' | 'completed' | 'pending' | 'cancelled' | 'archived' | 'reopened' | 'waiting_for_review' | 'waiting_for_approval' | 'waiting_for_feedback' | 'waiting_for_resources' | 'waiting_for_dependencies';
     manager_id: string; // UUID of the employee who is the manager of the project
-    created_at?: Date;
-    updated_at?: Date;
 }
 
-interface ProjectCreationAttributes extends Optional<ProjectAttributes, 'id' | 'description' | 'expected_end_date' | 'created_at' | 'updated_at'> {}
+interface ProjectCreationAttributes extends Optional<ProjectAttributes, 'id' | 'description' | 'expected_end_date'> {}
 
 class Project extends Model<ProjectAttributes, ProjectCreationAttributes> implements ProjectAttributes {
     public id!: string;
@@ -22,8 +23,13 @@ class Project extends Model<ProjectAttributes, ProjectCreationAttributes> implem
     public expected_end_date?: Date;
     public status!: 'active' | 'completed' | 'pending' | 'cancelled' | 'archived' | 'reopened' | 'waiting_for_review' | 'waiting_for_approval' | 'waiting_for_feedback' | 'waiting_for_resources' | 'waiting_for_dependencies';
     public manager_id!: string;
+
     public readonly created_at!: Date;
     public readonly updated_at!: Date;
+
+    public readonly manager?: Employee;
+    public readonly tasks?: Task[];
+    public readonly attachments?: Attachment[];
 
     // Métodos de inicialização e associação
     static initialize(sequelize: Sequelize) {
@@ -54,7 +60,7 @@ class Project extends Model<ProjectAttributes, ProjectCreationAttributes> implem
             status: {
                 type: DataTypes.ENUM('active', 'completed', 'pending', 'cancelled', 'archived', 'reopened', 'waiting_for_review', 'waiting_for_approval', 'waiting_for_feedback', 'waiting_for_resources', 'waiting_for_dependencies'),
                 allowNull: false,
-                defaultValue: 'Pending'
+                defaultValue: 'pending'
             },
             manager_id: {
                 type: DataTypes.UUID,
@@ -63,16 +69,6 @@ class Project extends Model<ProjectAttributes, ProjectCreationAttributes> implem
                     model: 'employees',
                     key: 'id'
                 }
-            },
-            created_at: {
-                type: DataTypes.DATE,
-                defaultValue: DataTypes.NOW,
-                allowNull: false
-            },
-            updated_at: {
-                type: DataTypes.DATE,
-                defaultValue: DataTypes.NOW,
-                allowNull: false
             }
         }, {
             sequelize,
@@ -90,7 +86,7 @@ class Project extends Model<ProjectAttributes, ProjectCreationAttributes> implem
             as: 'manager'
         });
 
-        Project.hasMany(models.EmployeeTask, {
+        Project.hasMany(models.Task, {
             foreignKey: 'project_id',
             as: 'tasks'
         });

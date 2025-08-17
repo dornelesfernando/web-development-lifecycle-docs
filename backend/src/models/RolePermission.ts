@@ -1,6 +1,6 @@
 import { DataTypes, Model, Optional, Sequelize } from "sequelize";
-import { Role } from "./Role";
-import { Permission } from "./Permission";
+import type { Role } from "./Role";
+import type { Permission } from "./Permission";
 
 interface RolePermissionAttributes {
     id: string; // UUID
@@ -14,6 +14,9 @@ class RolePermission extends Model<RolePermissionAttributes, RolePermissionCreat
     public id!: string;
     public role_id!: string;
     public permission_id!: string;
+
+    public readonly role?: Role;
+    public readonly permission?: Permission;
 
     // Métodos de inicialização e associação
     static initialize(sequelize: Sequelize) {

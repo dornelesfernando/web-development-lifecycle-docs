@@ -1,14 +1,21 @@
 import { DataTypes, Model, Optional, Sequelize } from 'sequelize';
 import bcrypt from 'bcryptjs';
-import { Position } from './Position';
-import { Department } from './Department';
-import { Role } from './Role';
-import { EmployeeRole } from './EmployeeRole';
+
+import type { Position } from './Position';
+import type { Department } from './Department';
+import type { Role } from './Role';
+import type { EmployeeRole } from './EmployeeRole';
+import { Project } from './Project';
+import { Task } from './Task';
+import { HourLog } from './HourLog';
+import { Attachment } from './Attachment';
+import { EmployeeTask } from './EmployeeTask';
 
 interface EmployeeAttributes {
     id: string; // UUID
     name: string;
     email: string;
+    password?: string;
     password_hash: string;
     cellphone?: string;
     hiring_date: Date;
@@ -18,16 +25,14 @@ interface EmployeeAttributes {
     department_id: string; // FK Department (UUID)
     supervisor_id?: string; // FK Employee (UUID)
     is_active: boolean;
-    created_at?: Date;
-    updated_at?: Date;
 }
 
-interface EmployeeCreationAttributes extends Optional<EmployeeAttributes, 'id' | 'cellphone' | 'birth_date' | 'address' | 'supervisor_id' | 'is_active' | 'created_at' | 'updated_at'> {}
-
+interface EmployeeCreationAttributes extends Optional<EmployeeAttributes, 'id' | 'password' | 'password_hash' | 'cellphone' | 'birth_date' | 'address' | 'supervisor_id' | 'is_active'> {}
 class Employee extends Model<EmployeeAttributes, EmployeeCreationAttributes> implements EmployeeAttributes {
     public id!: string;
     public name!: string;
     public email!: string;
+    public password!: string;
     public password_hash!: string;
     public cellphone?: string;
     public hiring_date!: Date;
@@ -37,8 +42,24 @@ class Employee extends Model<EmployeeAttributes, EmployeeCreationAttributes> imp
     public department_id!: string;
     public supervisor_id?: string;
     public is_active!: boolean;
+
     public readonly created_at!: Date;
     public readonly updated_at!: Date;
+
+    public readonly position?: Position;
+    public readonly department?: Department;
+    public readonly supervisor?: Employee;
+    public readonly subordinates?: Employee[];
+    public readonly managedProjects?: Project[];
+    public readonly createdTasks?: Task[];
+    public readonly employeeTasks?: EmployeeTask[];
+    public readonly hourLogs?: HourLog[];
+    public readonly approvedHourLogs?: HourLog[];
+    public readonly createdAttachments?: Attachment[];
+    public readonly profileAttachments?: Attachment[];
+    public readonly roles?: Role[];
+    public readonly employeeRoles?: EmployeeRole[];
+    public readonly managedDepartment?: Department;
 
     // Métodos de instância
     public async comparePassword(enteredPassword: string): Promise<boolean> {
@@ -113,16 +134,6 @@ class Employee extends Model<EmployeeAttributes, EmployeeCreationAttributes> imp
             is_active: {
                 type: DataTypes.BOOLEAN,
                 defaultValue: true,
-                allowNull: false
-            },
-            created_at: {
-                type: DataTypes.DATE,
-                defaultValue: DataTypes.NOW,
-                allowNull: false
-            },
-            updated_at: {
-                type: DataTypes.DATE,
-                defaultValue: DataTypes.NOW,
                 allowNull: false
             }
         }, {
@@ -204,12 +215,19 @@ class Employee extends Model<EmployeeAttributes, EmployeeCreationAttributes> imp
             as: 'profileAttachments'
         })
 
+        Employee.belongsToMany(models.Role, {
+            through: models.EmployeeRole, 
+            foreignKey: 'employee_id', 
+            otherKey: 'role_id', 
+            as: 'roles'
+        });
+
         Employee.hasMany(models.EmployeeRole, {
             foreignKey: 'employee_id',
             as: 'employeeRoles'
         })
 
-        // Associação reversa para Department.menager_id
+        // Associação reversa para Department.manager_id
         Employee.hasOne(models.Department, {
             foreignKey: 'manager_id',
             as: 'managedDepartment'

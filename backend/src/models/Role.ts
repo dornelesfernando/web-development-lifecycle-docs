@@ -1,6 +1,8 @@
 import { DataTypes, Model, Optional, Sequelize } from "sequelize";
-import { EmployeeRole } from "./EmployeeRole";
-import { RolePermission } from "./RolePermission";
+import type { Employee } from "./Employee";
+import type { Permission } from "./Permission";
+import type { EmployeeRole } from "./EmployeeRole";
+import type { RolePermission } from "./RolePermission";
 
 interface RoleAttributes {
     id: string; // UUID
@@ -14,6 +16,11 @@ class Role extends Model<RoleAttributes, RoleCreationAttributes> implements Role
     public id!: string;
     public name!: string;
     public description?: string;
+
+    public readonly employeeRoles?: EmployeeRole[];
+    public readonly rolePermissions?: RolePermission[];
+    public readonly employees?: Employee[];
+    public readonly permissions?: Permission[];
 
     // Métodos de inicialização e associação
     static initialize(sequelize: Sequelize) {
@@ -49,6 +56,20 @@ class Role extends Model<RoleAttributes, RoleCreationAttributes> implements Role
         Role.hasMany(models.RolePermission, {
             foreignKey: 'role_id',
             as: 'rolePermissions'
+        });
+
+        Role.belongsToMany(models.Employee, {
+            through: models.EmployeeRole,
+            foreignKey: 'role_id',
+            otherKey: 'employee_id',
+            as: 'employees'
+        });
+
+        Role.belongsToMany(models.Permission, {
+            through: models.RolePermission,
+            foreignKey: 'role_id',
+            otherKey: 'permission_id',
+            as: 'permissions'
         });
     }
 }

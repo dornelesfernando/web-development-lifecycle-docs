@@ -1,6 +1,6 @@
 import { DataTypes, Model, Optional, Sequelize } from "sequelize";
-import { Employee } from "./Employee";
-import { Task } from "./Task";
+import type { Employee } from "./Employee";
+import type { Task } from "./Task";
 
 interface EmployeeTaskAttributes {
     id: string; // UUID
@@ -18,6 +18,9 @@ class EmployeeTask extends Model<EmployeeTaskAttributes, EmployeeTaskCreationAtt
     public task_id!: string; // UUID to reference the task
     public assignment_date!: Date;
     public is_main_responsible!: boolean;
+
+    public readonly employee?: Employee;
+    public readonly task?: Task;
 
     // Métodos de inicialização e associação
     static initialize(sequelize: Sequelize) {
