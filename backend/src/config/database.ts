@@ -14,4 +14,4 @@ const dbConfig: Options = {
     timezone: '-03:00'
 }
 
-export default dbConfig;          
+export default dbConfig;
