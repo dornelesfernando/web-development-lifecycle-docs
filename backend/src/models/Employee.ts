@@ -27,7 +27,10 @@ interface EmployeeAttributes {
     is_active: boolean;
 }
 
-interface EmployeeCreationAttributes extends Optional<EmployeeAttributes, 'id' | 'password' | 'password_hash' | 'cellphone' | 'birth_date' | 'address' | 'supervisor_id' | 'is_active'> {}
+interface EmployeeCreationAttributes extends Optional<EmployeeAttributes, 'id' | 'password_hash' | 'cellphone' | 'birth_date' | 'address' | 'supervisor_id' | 'is_active'> {
+    password: string;
+}
+
 class Employee extends Model<EmployeeAttributes, EmployeeCreationAttributes> implements EmployeeAttributes {
     public id!: string;
     public name!: string;
@@ -85,7 +88,10 @@ class Employee extends Model<EmployeeAttributes, EmployeeCreationAttributes> imp
                 unique: true,
                 validate: {
                     isEmail: true
-                }
+                },
+            },
+            password: {
+                type: DataTypes.VIRTUAL
             },
             password_hash: {
                 type: DataTypes.STRING(255),
@@ -144,15 +150,15 @@ class Employee extends Model<EmployeeAttributes, EmployeeCreationAttributes> imp
             updatedAt: 'updated_at',
             hooks: {
                 beforeCreate: async (employee: Employee) => {
-                    if (employee.password_hash) {
+                    if (employee.password) {
                         const salt = await bcrypt.genSalt(10);
-                        employee.password_hash = await bcrypt.hash(employee.password_hash, salt);
+                        employee.password_hash = await bcrypt.hash(employee.password, salt);
                     }                
                 },
                 beforeUpdate: async (employee: Employee) => {
-                    if (employee.changed('password_hash') && employee.password_hash) {
+                    if (employee.password) {
                         const salt = await bcrypt.genSalt(10);
-                        employee.password_hash = await bcrypt.hash(employee.password_hash, salt);
+                        employee.password_hash = await bcrypt.hash(employee.password, salt);
                     }
                 }
             }
@@ -235,4 +241,4 @@ class Employee extends Model<EmployeeAttributes, EmployeeCreationAttributes> imp
     }
 }
 
-export { Employee };
+export { Employee, EmployeeCreationAttributes, EmployeeAttributes };
