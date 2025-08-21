@@ -148,20 +148,6 @@ class Employee extends Model<EmployeeAttributes, EmployeeCreationAttributes> imp
             timestamps: true,
             createdAt: 'created_at',
             updatedAt: 'updated_at',
-            hooks: {
-                beforeCreate: async (employee: Employee) => {
-                    if (employee.password) {
-                        const salt = await bcrypt.genSalt(10);
-                        employee.password_hash = await bcrypt.hash(employee.password, salt);
-                    }                
-                },
-                beforeUpdate: async (employee: Employee) => {
-                    if (employee.password) {
-                        const salt = await bcrypt.genSalt(10);
-                        employee.password_hash = await bcrypt.hash(employee.password, salt);
-                    }
-                }
-            }
         });
     }
 

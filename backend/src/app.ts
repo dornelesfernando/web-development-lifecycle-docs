@@ -3,7 +3,7 @@ import cors from 'cors';
 import 'express-async-errors';
 
 // Routes
-import employeeRoutes from './routes/employeeRoutes';
+import mainRouter from './routes/index';
 
 // Middleware
 import { errorMiddleware } from './middleware/errorMiddleware';
@@ -19,7 +19,7 @@ app.get('/', (req, res) => {
     res.send('Hello, World. Está funcional');
 });
 
-app.use('/employees', employeeRoutes);
+app.use('/api', mainRouter);
 
 app.use(errorMiddleware);
 

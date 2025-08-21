@@ -20,11 +20,13 @@ export const createEmployeeSchema = z.object({
         
         position_id: z.string()
         .min(1, 'O ID do cargo é obrigatório.' )
-        .uuid({ message: 'O ID do cargo deve ser válido.' }),
+        // .uuid({ message: 'O ID do cargo deve ser válido.' }),
+        .optional(),
         
         department_id: z.string()
         .min(1, 'O ID do departamento é obrigatório.')
-        .uuid({ message: 'O Id do departamento deve ser válido.' }),
+        // .uuid({ message: 'O Id do departamento deve ser válido.' })
+        .optional(),
         
         cellphone: z.string().optional(),
         birth_date: z.string().datetime().optional(),
@@ -60,7 +62,7 @@ export const updateEmployeeSchema = z.object({
 
 export const getEmployeesSchema = z.object({
     query: z.object({
-        page: z.coerce.number().int().positive().default(1),
-        limit: z.coerce.number().int().positive().default(10)
+        page: z.coerce.number().int().positive('A página deve ser um número positivo.').default(1),
+        limit: z.coerce.number().int('O limite deve ser um número positivo.').positive().default(10)
     }),
 });
