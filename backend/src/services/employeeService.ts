@@ -67,7 +67,7 @@ export class EmployeeService {
             include: [
                 { association: 'position' },
                 { association: 'department' },
-                { association: 'supervisor', attributes: ['id', 'name', 'emal'] },
+                { association: 'supervisor', attributes: ['id', 'name', 'email'] },
             ],
         });
 

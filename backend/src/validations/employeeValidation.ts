@@ -33,6 +33,19 @@ export const createEmployeeSchema = z.object({
     }),
 });
 
+export const getEmployeesSchema = z.object({
+    query: z.object({
+        page: z.coerce.number().int().positive('A página deve ser um número positivo.').default(1),
+        limit: z.coerce.number().int('O limite deve ser um número positivo.').positive().default(10)
+    }),
+});
+
+export const employeeIdSchema = z.object({
+    params: z.object({
+        id: z.string().uuid("ID do usuário inválido."),
+    }),
+});
+
 export const updateEmployeeSchema = z.object({
     params: z.object({
         id: z.string()
@@ -53,14 +66,6 @@ export const updateEmployeeSchema = z.object({
         
         return Object.keys(data).length > 0
     }, {
-        
         message: 'Pelo menos um campo deve ser fornecido para atualização.' 
     })
-});
-
-export const getEmployeesSchema = z.object({
-    query: z.object({
-        page: z.coerce.number().int().positive('A página deve ser um número positivo.').default(1),
-        limit: z.coerce.number().int('O limite deve ser um número positivo.').positive().default(10)
-    }),
 });
