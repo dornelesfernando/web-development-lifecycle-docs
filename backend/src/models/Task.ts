@@ -8,6 +8,7 @@ import type { Attachment } from "./Attachment";
 
 interface TaskAttributes {
     id: string; // UUID
+    parent_id?: string; // UUID
     name: string;
     description?: string;
     due_date?: Date;
@@ -17,10 +18,11 @@ interface TaskAttributes {
     creator_id: string; // UUID of the employee who created the task
 }
 
-interface TaskCreationAttributes extends Optional<TaskAttributes, 'id' | 'description' | 'due_date' | 'priority' | 'status' | 'project_id'> {}
+interface TaskCreationAttributes extends Optional<TaskAttributes, 'id' | 'parent_id' | 'description' | 'due_date' | 'priority' | 'status' | 'project_id'> {}
 
 class Task extends Model<TaskAttributes, TaskCreationAttributes> implements TaskAttributes {
     public id!: string;
+    public parent_id?: string;
     public name!: string;
     public description?: string;
     public due_date?: Date;
@@ -32,6 +34,7 @@ class Task extends Model<TaskAttributes, TaskCreationAttributes> implements Task
     public readonly created_at!: Date;
     public readonly updated_at!: Date;
 
+    public readonly parent?: Task;
     public readonly project?: Project;
     public readonly creator?: Employee;
     public readonly attachments?: Attachment[];
@@ -47,6 +50,14 @@ class Task extends Model<TaskAttributes, TaskCreationAttributes> implements Task
                 defaultValue: DataTypes.UUIDV4,
                 primaryKey: true,
                 allowNull: false
+            },
+            parent_id: {
+                type: DataTypes.UUID,
+                allowNull: true,
+                references: {
+                    model: 'tasks',
+                    key: 'id'
+                }
             },
             name: {
                 type: DataTypes.STRING(150),
@@ -97,6 +108,12 @@ class Task extends Model<TaskAttributes, TaskCreationAttributes> implements Task
 
     // Métodos de associação
     static associate(models: any) {
+
+        Task.belongsTo(models.Task, {
+            foreignKey: 'parent_id',
+            as: 'parent'
+        });
+
         Task.belongsTo(models.Project, {
             foreignKey: 'project_id',
             as: 'project'
