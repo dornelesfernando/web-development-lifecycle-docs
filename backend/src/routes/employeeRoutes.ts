@@ -1,15 +1,28 @@
 import { Router } from "express";
-import {
-    createEmployee,
-    getAllEmployees
-} from '../controllers/employeeController';
+import { EmployeeController } from "../controllers/employeeController";
 import { validate } from '../middleware/validateMiddleware';
-import { createEmployeeSchema, getEmployeesSchema } from '../validations/employeeValidation';
+import { 
+    createEmployeeSchema, 
+    getEmployeesSchema,
+    employeeIdSchema,
+    updateEmployeeSchema,
+} from '../validations/employeeValidation';
 
 const router = Router();
+const employeeController = new EmployeeController();
 
-router.post('/', validate(createEmployeeSchema), createEmployee);
+// CREATE
+router.post('/', validate(createEmployeeSchema), employeeController.create.bind(employeeController));
 
-router.get('/', validate(getEmployeesSchema), getAllEmployees);
+// READ
+router.get('/', validate(getEmployeesSchema), employeeController.findAll.bind(employeeController));
+router.get('/:id', validate(employeeIdSchema), employeeController.findById.bind(employeeController));
+
+// UPDATE
+router.patch('/:id', validate(updateEmployeeSchema), employeeController.update.bind(employeeController));
+
+// DELETE
+router.delete('/:id', validate(employeeIdSchema), employeeController.delete.bind(employeeController));
+
 
 export default router;

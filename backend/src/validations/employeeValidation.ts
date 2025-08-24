@@ -20,18 +20,29 @@ export const createEmployeeSchema = z.object({
         
         position_id: z.string()
         .min(1, 'O ID do cargo é obrigatório.' )
-        // .uuid({ message: 'O ID do cargo deve ser válido.' }),
-        .optional(),
+        .uuid({ message: 'O ID do cargo deve ser válido.' }),
         
         department_id: z.string()
         .min(1, 'O ID do departamento é obrigatório.')
-        // .uuid({ message: 'O Id do departamento deve ser válido.' })
-        .optional(),
+        .uuid({ message: 'O Id do departamento deve ser válido.' }),
         
         cellphone: z.string().optional(),
         birth_date: z.string().datetime().optional(),
         address: z.string().optional(),
         supervisor_id: z.string().uuid().optional(),
+    }),
+});
+
+export const getEmployeesSchema = z.object({
+    query: z.object({
+        page: z.coerce.number().int().positive('A página deve ser um número positivo.').default(1),
+        limit: z.coerce.number().int('O limite deve ser um número positivo.').positive().default(10)
+    }),
+});
+
+export const employeeIdSchema = z.object({
+    params: z.object({
+        id: z.string().uuid("ID do usuário inválido."),
     }),
 });
 
@@ -55,14 +66,6 @@ export const updateEmployeeSchema = z.object({
         
         return Object.keys(data).length > 0
     }, {
-        
         message: 'Pelo menos um campo deve ser fornecido para atualização.' 
     })
-});
-
-export const getEmployeesSchema = z.object({
-    query: z.object({
-        page: z.coerce.number().int().positive('A página deve ser um número positivo.').default(1),
-        limit: z.coerce.number().int('O limite deve ser um número positivo.').positive().default(10)
-    }),
 });
